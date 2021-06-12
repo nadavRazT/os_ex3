@@ -6,6 +6,8 @@ CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.o
  /home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
  /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
  /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.cpp
+ /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h
+ /home/noam/Documents/CLionProjects/OS/os_ex3/SampleClient.cpp
 CMakeFiles/os_ex3.dir/SampleClient.cpp.o
  /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
  /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h

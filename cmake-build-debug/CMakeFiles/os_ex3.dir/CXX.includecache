@@ -37,4 +37,22 @@ atomic
 /home/noam/Documents/CLionProjects/OS/os_ex3/atomic
 iostream
 /home/noam/Documents/CLionProjects/OS/os_ex3/iostream
+SampleClient.cpp
+/home/noam/Documents/CLionProjects/OS/os_ex3/SampleClient.cpp
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h
+MapReduceClient.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/SampleClient.cpp
+MapReduceFramework.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h
+cstdio
+-
+string
+-
+array
+-
+unistd.h
+-
 

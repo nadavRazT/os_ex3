@@ -5,17 +5,19 @@
 #include "atomic"
 #include "iostream"
 
+#include "SampleClient.cpp"
+
 
 typedef void *JobHandle;
 
-enum stage_t {
-    UNDEFINED_STAGE = 0, MAP_STAGE = 1, SHUFFLE_STAGE = 2, REDUCE_STAGE = 3
-};
+//enum stage_t {
+//    UNDEFINED_STAGE = 0, MAP_STAGE = 1, SHUFFLE_STAGE = 2, REDUCE_STAGE = 3
+//};
 
-typedef struct {
-    stage_t stage;
-    float percentage;
-} JobState;
+//typedef struct {
+//    stage_t stage;
+//    float percentage;
+//} JobState;
 
 typedef struct {
     std::atomic<int> *atomic_counter;
@@ -24,6 +26,7 @@ typedef struct {
     const InputVec *inputVector;
     const MapReduceClient *client;
     Barrier* barrier;
+    pthread_mutex_t *mutex;
 } ThreadContext;
 
 typedef struct {
@@ -49,12 +52,26 @@ void *threadMapReduce(void* context)
 {
     ThreadContext *thread_context = static_cast<ThreadContext*>(context);
     // map
-    while(reinterpret_cast<unsigned long>(thread_context->atomic_counter) != (thread_context->inputVector)->size() - 1)
+    while(true)
     {
+        std::cout << *(thread_context->atomic_counter)<<std::endl;
+
+        pthread_mutex_lock(thread_context->mutex);
+        if(*(thread_context->atomic_counter) == (thread_context->inputVector)->size() - 1)
+        {
+            pthread_mutex_unlock(thread_context->mutex);
+            break;
+        }
         int old_value = (*(thread_context->atomic_counter))++;
         const InputVec *input_vec = thread_context->inputVector;
         InputPair input_pair = input_vec->at(old_value);
+        pthread_mutex_unlock(thread_context->mutex);
         thread_context->client->map(input_pair.first, input_pair.second, thread_context);
+    }
+
+    for(int i = 0; i < thread_context->ds2.size(); i++)
+    {
+        std::cout << ((thread_context->ds2.at(i)).second) << std::endl;
     }
     // sort
     std::sort((thread_context->ds2).begin(), (thread_context->ds2).end());
@@ -74,11 +91,12 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
     ThreadContext thread_context_arr[multiThreadLevel];
     std::atomic<int> atomic_counter(0);
     Barrier barrier(multiThreadLevel);
+    pthread_mutex_t mutex(PTHREAD_MUTEX_INITIALIZER);
     for (int i = 0; i < multiThreadLevel; ++i) {
         auto *ds2 = new std::vector<std::pair<K2*, V2*>>();
         auto *ds3 = new std::vector<std::pair<K3*, V3*>>();
 
-        ThreadContext tc = {&atomic_counter, *ds2, *ds3, &inputVec, &client, &barrier};
+        ThreadContext tc = {&atomic_counter, *ds2, *ds3, &inputVec, &client, &barrier, &mutex};
         thread_context_arr[i] = tc;
         thread_contexts.push_back(tc);
     }
@@ -89,7 +107,10 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
     }
 
     // wait for job to finish
-
+//    while (true)
+//    {
+//       std::cout << "stil here" <<std::endl;
+//    }
     // reduce K3 V3 from all threads
 }
 
