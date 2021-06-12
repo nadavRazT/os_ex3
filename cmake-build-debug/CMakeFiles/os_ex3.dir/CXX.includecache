@@ -18,11 +18,23 @@ cstdio
 pthread.h
 -
 
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/barrierdemo.cpp
-Barrier.h
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
+vector
+-
+utility
+-
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.cpp
+MapReduceClient.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
 pthread.h
 -
-cstdio
+algorithm
 -
+Barrier/Barrier.cpp
+/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.cpp
+atomic
+/home/noam/Documents/CLionProjects/OS/os_ex3/atomic
+iostream
+/home/noam/Documents/CLionProjects/OS/os_ex3/iostream
 

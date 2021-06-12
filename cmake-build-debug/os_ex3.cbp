@@ -88,7 +88,16 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h">
+			<Option target="os_ex3"/>
+		</Unit>
+		<Unit filename="/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.cpp">
+			<Option target="os_ex3"/>
+		</Unit>
 		<Unit filename="/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h">
+			<Option target="os_ex3"/>
+		</Unit>
+		<Unit filename="/home/noam/Documents/CLionProjects/OS/os_ex3/SampleClient.cpp">
 			<Option target="os_ex3"/>
 		</Unit>
 		<Unit filename="/home/noam/Documents/CLionProjects/OS/os_ex3/CMakeLists.txt">

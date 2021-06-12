@@ -1,1 +1,1 @@
-/usr/bin/c++ -pthread -g CMakeFiles/os_ex3.dir/Barrier/barrierdemo.cpp.o CMakeFiles/os_ex3.dir/Barrier/Barrier.cpp.o -o os_ex3 
+/usr/bin/c++ -pthread -g CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.o CMakeFiles/os_ex3.dir/SampleClient.cpp.o -o os_ex3 

@@ -142,6 +142,60 @@ os_ex3/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/build
 .PHONY : os_ex3/fast
 
+MapReduceFramework.o: MapReduceFramework.cpp.o
+
+.PHONY : MapReduceFramework.o
+
+# target to build an object file
+MapReduceFramework.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.o
+.PHONY : MapReduceFramework.cpp.o
+
+MapReduceFramework.i: MapReduceFramework.cpp.i
+
+.PHONY : MapReduceFramework.i
+
+# target to preprocess a source file
+MapReduceFramework.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.i
+.PHONY : MapReduceFramework.cpp.i
+
+MapReduceFramework.s: MapReduceFramework.cpp.s
+
+.PHONY : MapReduceFramework.s
+
+# target to generate assembly for a file
+MapReduceFramework.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.s
+.PHONY : MapReduceFramework.cpp.s
+
+SampleClient.o: SampleClient.cpp.o
+
+.PHONY : SampleClient.o
+
+# target to build an object file
+SampleClient.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/SampleClient.cpp.o
+.PHONY : SampleClient.cpp.o
+
+SampleClient.i: SampleClient.cpp.i
+
+.PHONY : SampleClient.i
+
+# target to preprocess a source file
+SampleClient.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/SampleClient.cpp.i
+.PHONY : SampleClient.cpp.i
+
+SampleClient.s: SampleClient.cpp.s
+
+.PHONY : SampleClient.s
+
+# target to generate assembly for a file
+SampleClient.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/SampleClient.cpp.s
+.PHONY : SampleClient.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -151,6 +205,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... os_ex3"
+	@echo "... MapReduceFramework.o"
+	@echo "... MapReduceFramework.i"
+	@echo "... MapReduceFramework.s"
+	@echo "... SampleClient.o"
+	@echo "... SampleClient.i"
+	@echo "... SampleClient.s"
 .PHONY : help
 
 
