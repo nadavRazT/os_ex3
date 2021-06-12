@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.cpp
+Barrier.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
+cstdlib
+-
+cstdio
+-
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
+pthread.h
+-
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/barrierdemo.cpp
+Barrier.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
+pthread.h
+-
+cstdio
+-
+
