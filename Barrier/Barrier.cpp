@@ -1,6 +1,7 @@
 #include "Barrier.h"
 #include <cstdlib>
 #include <cstdio>
+#include "iostream"
 
 Barrier::Barrier(int numThreads)
 		: mutex(PTHREAD_MUTEX_INITIALIZER)

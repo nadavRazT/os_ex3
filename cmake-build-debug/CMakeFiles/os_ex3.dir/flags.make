@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/noam/Documents/CLionProjects/OS/os_ex3/. -I/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier -I/home/noam/Documents/CLionProjects/OS/os_ex3/Atomic
+CXX_INCLUDES = -I/home/noam/Documents/CLionProjects/OS/os_ex3/.
 
 CXX_FLAGS = -pthread -g
 

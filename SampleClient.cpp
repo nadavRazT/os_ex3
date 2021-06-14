@@ -3,6 +3,7 @@
 #include <string>
 #include <array>
 #include <unistd.h>
+#include "iostream"
 
 class VString : public V1 {
 public:
@@ -79,7 +80,8 @@ int main(int argc, char** argv)
 	inputVec.push_back({nullptr, &s3});
 	JobState state;
     JobState last_state={UNDEFINED_STAGE,0};
-	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 4);
+	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 2);
+	while(true){}
 	getJobState(job, &state);
     
 	while (state.stage != REDUCE_STAGE || state.percentage != 100.0)
