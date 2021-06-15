@@ -5,6 +5,43 @@
 #include "atomic"
 #include "iostream"
 
+#define MIDDLE_MASK 0x7fffffff
+#define FIRST_MASK 0x7ffffff
+
+//TODO complicated atomic counter
+// TODO semaphore
+// todo remove
+class VString : public V1 {
+public:
+    VString(std::string content) : content(content) {}
+
+    std::string content;
+};
+
+class VCount : public V2, public V3 {
+public:
+    VCount(int count) : count(count) {}
+
+    int count;
+};
+
+
+class KChar : public K2, public K3 {
+public:
+    KChar(char c) : c(c) {}
+
+    virtual bool operator<(const K2 &other) const {
+        return c < static_cast<const KChar &>(other).c;
+    }
+
+    virtual bool operator<(const K3 &other) const {
+        return c < static_cast<const KChar &>(other).c;
+    }
+
+    char c;
+};
+
+
 typedef void *JobHandle;
 //typedef struct JobContext;
 
@@ -19,22 +56,64 @@ typedef struct {
 
 typedef struct {
     std::vector<std::pair<K2 *, V2 *>> *ds2;
-    std::vector<std::pair<K3 *, V3 *>> *ds3;
     JobHandle job_context;
     int threadId;
 } ThreadContext;
 
 typedef struct {
     std::vector<ThreadContext *> *thread_contexts;
-//    std::vector<pthread_t> threads;
     JobState job_state;
     int num_threads;
     const InputVec *inputVector;
     const MapReduceClient *client;
     Barrier *barrier;
     pthread_mutex_t *mutex;
-    std::atomic<int> *atomic_counter;
+    std::atomic<uint64_t> *atomic_counter;
+    std::vector<std::vector<IntermediatePair>> *shuffledVector;
+    OutputVec *output_vec;
+    std::vector<pthread_t *> *threads;
+    pthread_mutex_t *waitMutex;
 } JobContext;
+
+void printAtomic(JobContext *job_context) {
+    printf("atomic counter first 31 bit: %d\n", job_context->atomic_counter->load() & (0x7ffffff));
+    printf("atomic counter next 31 bit: %d\n", job_context->atomic_counter->load() >> 31 & (0x7fffffff));
+    printf("atomic counter last 2 bit: %d\n", job_context->atomic_counter->load() >> 62);
+}
+
+
+void printPair(std::pair<K2 *, V2 *> pair, ThreadContext *thread_context, int i) {
+    K2 *k2 = pair.first;
+    V2 *v2 = pair.second;
+    KChar *ck2 = (KChar *) k2;
+    VCount *cv2 = (VCount *) v2;
+    std::cout << "THREAD " << thread_context->threadId << " key: " << ck2->c << " value: " << cv2->count << " index: "
+              << i << std::endl;
+}
+
+
+void printInterVec(std::vector<IntermediatePair> *v, ThreadContext *thread_context) {
+    for (int i = 0; i < v->size(); i++) {
+        printPair(v->at(i), thread_context, i);
+    }
+}
+
+
+void printPair(OutputPair pair, ThreadContext *thread_context, int i) {
+    K3 *k = pair.first;
+    V3 *v = pair.second;
+    KChar *ck2 = (KChar *) k;
+    VCount *cv2 = (VCount *) v;
+    std::cout << "THREAD " << thread_context->threadId << " key: " << ck2->c << " value: " << cv2->count << " index: "
+              << i << std::endl;
+}
+
+
+void printInterVec(OutputVec *v, ThreadContext *thread_context) {
+    for (int i = 0; i < v->size(); i++) {
+        printPair(v->at(i), thread_context, i);
+    }
+}
 
 
 void emit2(K2 *key, V2 *value, void *context) {
@@ -44,7 +123,20 @@ void emit2(K2 *key, V2 *value, void *context) {
 
 void emit3(K3 *key, V3 *value, void *context) {
     ThreadContext *thread_context = static_cast<ThreadContext *>(context);
-    thread_context->ds3->push_back(std::pair<K3 *, V3 *>(key, value));
+    JobContext *job_context = static_cast<JobContext *>(thread_context->job_context);
+    pthread_mutex_lock(job_context->mutex);
+    job_context->output_vec->push_back(std::pair<K3 *, V3 *>(key, value));
+    pthread_mutex_unlock(job_context->mutex);
+}
+
+bool compareKeys(K2 *k1, K2 *k2) {
+    bool gt = k1->operator<(*k2);
+    bool st = k2->operator<(*k1);
+    return (not gt) and (not st);
+}
+
+bool compFunc(IntermediatePair p1, IntermediatePair p2) {
+    return p1.first->operator<(*p2.first);
 }
 
 
@@ -52,16 +144,19 @@ K2 *find_next_key(JobContext *context) {
     if (context->thread_contexts->size() == 0) {
         return nullptr;
     }
-
-    K2 *min = context->thread_contexts->at(0)->ds2->at(0).first;
+    IntermediatePair *min = nullptr;
     for (int i = 0; i < context->num_threads; i++) {
-        if (context->thread_contexts->at(i)->ds2->size() > 0 && context->thread_contexts->at(i)->ds2->at(0)
-                                                                        .first < min) {
-            min = context->thread_contexts->at(i)->ds2->at(0).first;
+        if (context->thread_contexts->at(i)->ds2->size() == 0) {
+            continue;
+        }
+        IntermediatePair *p = &context->thread_contexts->at(i)->ds2->at(0);
+        if (min == nullptr || compFunc(*p, *min)) {
+            min = p;
         }
     }
-    return min;
+    return min->first;
 }
+
 
 bool is_all_empty(JobContext *context) {
     for (int i = 0; i < context->num_threads; i++) {
@@ -74,43 +169,87 @@ bool is_all_empty(JobContext *context) {
 
 
 void map_helper(ThreadContext *thread_context, JobContext *job_context) {
+    *job_context->atomic_counter |= ((uint64_t) MAP_STAGE << 62);
     // map
     while (true) {
         pthread_mutex_lock(job_context->mutex);
-        if (*(job_context->atomic_counter) == (job_context->inputVector)->size()) {
+
+        if (((job_context->atomic_counter->load()) & FIRST_MASK) == (job_context->inputVector)->size()) {
             pthread_mutex_unlock(job_context->mutex);
             break;
         }
-        std::cout << "thread " << thread_context->threadId << " took " << *(job_context->atomic_counter)
-                  << std::endl;
 
-        int old_value = (*(job_context->atomic_counter))++;
+        uint64_t old_value = (*(job_context->atomic_counter))++;
+        old_value &= FIRST_MASK;
         const InputVec *input_vec = job_context->inputVector;
         InputPair input_pair = input_vec->at(old_value);
         pthread_mutex_unlock(job_context->mutex);
         job_context->client->map(input_pair.first, input_pair.second, thread_context);
     }
+
     // sort
-    std::sort((thread_context->ds2)->begin(), (thread_context->ds2)->end());
+    std::sort((thread_context->ds2)->begin(), (thread_context->ds2)->end(), compFunc);
+    std::cout << "---------- MAPPING ---------" << std::endl;
+    printInterVec(thread_context->ds2, thread_context);
 }
+
+
+int numOfShuffleTasks(JobContext *job_context) {
+    int n = 0;
+    for (int i = 0; i < job_context->thread_contexts->size(); i++) {
+        n += job_context->thread_contexts->at(i)->ds2->size();
+    }
+    return n;
+}
+
 
 void shuffle_helper(ThreadContext *thread_context, JobContext *job_context) {
     if (thread_context->threadId == 1) {
+
+        *job_context->atomic_counter += ((uint64_t) 1 << 62);
+        *job_context->atomic_counter &= ((uint64_t) 3 << 62);
+        int num_of_shuffle_tasks = numOfShuffleTasks(job_context);
+        *job_context->atomic_counter += (uint64_t) num_of_shuffle_tasks << 31;
         auto *shuffled = new std::vector<std::vector<std::pair<K2 *, V2 *>>>();
         while (!is_all_empty(job_context)) {
             K2 *next_key = find_next_key(job_context);
             auto *next_vector = new std::vector<std::pair<K2 *, V2 *>>();
             for (int i = 0; i < job_context->num_threads; i++) {
                 std::vector<std::pair<K2 *, V2 *>> *thread_vector = job_context->thread_contexts->at(i)->ds2;
-                while (thread_vector->size() > 0 && thread_vector->at(0).first == next_key) {
+                while (thread_vector->size() > 0 && compareKeys(thread_vector->at(0).first, next_key)) {
                     next_vector->push_back(thread_vector->at(0));
+                    (*(job_context->atomic_counter))++;
                     thread_vector->erase(thread_vector->begin());
-//                    thread_vector(thread_vector[0]);
-                    thread_vector;
                 }
             }
             shuffled->push_back(*next_vector);
         }
+        job_context->shuffledVector = shuffled;
+        std::cout << "----------SHUFFLING---------" << std::endl;
+        for (int i = 0; i < shuffled->size(); i++) {
+            printInterVec(&shuffled->at(i), thread_context);
+        }
+
+        *job_context->atomic_counter &= ((uint64_t) 3 << 62);
+        *job_context->atomic_counter |= ((uint64_t) 3 << 62);
+        *job_context->atomic_counter += (uint64_t) shuffled->size() << 31;
+    }
+}
+
+void reduce_helper(ThreadContext *thread_context, JobContext *job_context) {
+    *job_context->atomic_counter |= ((uint64_t) 1 << 62);
+    while (true) {
+        pthread_mutex_lock(job_context->mutex);
+        if (((job_context->atomic_counter->load()) & FIRST_MASK) == (job_context->shuffledVector)->size()) {
+            pthread_mutex_unlock(job_context->mutex);
+            break;
+        }
+
+        uint64_t old_value = (*(job_context->atomic_counter))++;
+        old_value &= FIRST_MASK;
+        const MapReduceClient *client = job_context->client;
+        pthread_mutex_unlock(job_context->mutex);
+        client->reduce(&(job_context->shuffledVector->at(old_value)), thread_context);
     }
 }
 
@@ -118,60 +257,78 @@ void *threadMapReduce(void *context) {
     ThreadContext *thread_context = static_cast<ThreadContext *>(context);
     JobContext *job_context = static_cast<JobContext *>(thread_context->job_context);
     // map
+    uint64_t numOfMapJob = job_context->inputVector->size();
+    *job_context->atomic_counter |= numOfMapJob << 31;
     map_helper(thread_context, job_context);
-    std::cout << "BEFORE " << thread_context->threadId << std::endl;
     job_context->barrier->barrier();
-    std::cout << "AFTER " << thread_context->threadId << std::endl;
+    std::cout << "AFTER MAP" << thread_context->threadId << std::endl;
 
     // shuffle
     shuffle_helper(thread_context, job_context);
     job_context->barrier->barrier();
+
+    std::cout << "AFTER SHUFFEL" << std::endl;
     //reduce
+    reduce_helper(thread_context, job_context);
+    job_context->barrier->barrier();
+    if (thread_context->threadId == 1) {
+        std::cout << "---------- REDUCING ---------" << std::endl;
+        printInterVec(job_context->output_vec, thread_context);
+    }
 }
 
 JobHandle startMapReduceJob(const MapReduceClient &client,
                             const InputVec &inputVec, OutputVec &outputVec,
                             int multiThreadLevel) {
     pthread_t threads[multiThreadLevel];
-    ThreadContext thread_context_arr[multiThreadLevel];
+//    ThreadContext thread_context_arr[multiThreadLevel];
     auto *thread_contexts = new std::vector<ThreadContext *>();
-    std::atomic<int> atomic_counter(0);
+    auto *threads_vec = new std::vector<pthread_t *>();
+
+    std::atomic<uint64_t> atomic_counter(0);
     Barrier *barrier = new Barrier(multiThreadLevel);
     pthread_mutex_t mutex(PTHREAD_MUTEX_INITIALIZER);
     pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_t waitMutex(PTHREAD_MUTEX_INITIALIZER);
+    pthread_mutex_init(&waitMutex, NULL);
     JobState job_state = {UNDEFINED_STAGE, 0};
 
 
     JobContext *job_context = new JobContext{thread_contexts, job_state, multiThreadLevel, &inputVec, &client, barrier,
-                                             &mutex,
-                                             &atomic_counter};
+                                             &mutex, &atomic_counter, nullptr, &outputVec, threads_vec,
+                                             &waitMutex};
     for (int i = 0; i < multiThreadLevel; ++i) {
         auto *ds2 = new std::vector<std::pair<K2 *, V2 *>>();
-        auto *ds3 = new std::vector<std::pair<K3 *, V3 *>>();
         JobHandle job_handle = (void *) job_context;
-        ThreadContext *tc = new ThreadContext{ds2, ds3, job_handle, i + 1};
+        ThreadContext *tc = new ThreadContext{ds2, job_handle, i + 1};
         job_context->thread_contexts->push_back(tc);
     }
 
     for (int i = 0; i < multiThreadLevel; ++i) {
-
+        threads_vec->push_back(threads + i);
         pthread_create(threads + i, NULL, threadMapReduce, job_context->thread_contexts->at(i));
     }
-
-    // wait for job to finish
-//    while (true)
-//    {
-//       std::cout << "stil here" <<std::endl;
-//    }
-    // reduce K3 V3 from all threads
-    return NULL;
+    JobHandle job_handle = (void *) job_context;
+    return job_handle;
 }
 
-void waitForJob(JobHandle job) {};
+void waitForJob(JobHandle job) {
+    JobContext *job_context = static_cast<JobContext *>(job);
+    pthread_mutex_lock(job_context->waitMutex);
+    for (int i = 0; i < job_context->num_threads; ++i) {
+        pthread_join(*(job_context->threads->at(i)), NULL);
+    }
+    pthread_mutex_unlock(job_context->waitMutex);
+}
 
-void getJobState(JobHandle job, JobState *state) {};
+void getJobState(JobHandle job, JobState *state) {
+    JobContext *job_context = static_cast<JobContext *>(job);
 
-void closeJobHandle(JobHandle job) {};
+};
+
+void closeJobHandle(JobHandle job) {
+    JobContext *job_context = static_cast<JobContext *>(job);
+};
 
 
 

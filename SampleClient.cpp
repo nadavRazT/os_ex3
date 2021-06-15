@@ -75,13 +75,18 @@ int main(int argc, char** argv)
 	VString s1("This string is full of characters");
 	VString s2("Multithreading is awesome");
 	VString s3("race conditions are bad");
+//	VString s1("abc");
+//	VString s2("acb");
+//	VString s3("abc");
 	inputVec.push_back({nullptr, &s1});
 	inputVec.push_back({nullptr, &s2});
 	inputVec.push_back({nullptr, &s3});
 	JobState state;
     JobState last_state={UNDEFINED_STAGE,0};
 	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 2);
-	while(true){}
+//    waitForJob(job);
+    std::cout<<"FINISHED"<< std::endl;
+    while(true){};
 	getJobState(job, &state);
     
 	while (state.stage != REDUCE_STAGE || state.percentage != 100.0)
