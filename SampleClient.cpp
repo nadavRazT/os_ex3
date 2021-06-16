@@ -75,11 +75,11 @@ int main(int argc, char** argv)
 //	VString s1("This string is full of characters");
 //	VString s2("Multithreading is awesome");
 //	VString s3("race conditions are bad");
-	VString s1("absertsrec");
-	VString s2("acserrtsertb");
-	VString s3("absersfd rc");
-    VString s5("aasfdhgmecb");
-    VString s4("aservsevserbc");
+	VString s1("abcd");
+	VString s2("ab");
+	VString s3("ab");
+    VString s5("aacb");
+    VString s4("abc");
 	inputVec.push_back({nullptr, &s1});
 	inputVec.push_back({nullptr, &s2});
 	inputVec.push_back({nullptr, &s3});
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
 	inputVec.push_back({nullptr, &s5});
 	JobState state;
     JobState last_state={UNDEFINED_STAGE,0};
-	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 2);
+	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 90);
 //    waitForJob(job);
 
 //    std::cout<<"FINISHED"<< std::endl;

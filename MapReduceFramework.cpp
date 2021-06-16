@@ -62,7 +62,7 @@ typedef struct {
 
 typedef struct {
     std::vector<ThreadContext *> *thread_contexts;
-    JobState job_state;
+    JobState *job_state;
     int num_threads;
     const InputVec *inputVector;
     const MapReduceClient *client;
@@ -73,6 +73,7 @@ typedef struct {
     OutputVec *output_vec;
     std::vector<pthread_t *> *threads;
     pthread_mutex_t *waitMutex;
+    pthread_t *thread_arr;
 } JobContext;
 
 void printAtomic(JobContext *job_context) {
@@ -290,8 +291,7 @@ void *threadMapReduce(void *context) {
 JobHandle startMapReduceJob(const MapReduceClient &client,
                             const InputVec &inputVec, OutputVec &outputVec,
                             int multiThreadLevel) {
-    pthread_t *threads = new pthread_t [multiThreadLevel];
-//    ThreadContext thread_context_arr[multiThreadLevel];
+    pthread_t *threads_arr = new pthread_t [multiThreadLevel];
     auto *thread_contexts = new std::vector<ThreadContext *>();
     auto *threads_vec = new std::vector<pthread_t *>();
 
@@ -299,25 +299,25 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
     Barrier *barrier = new Barrier(multiThreadLevel);
     pthread_mutex_t* mutex = new pthread_mutex_t;
     pthread_mutex_init(mutex, NULL);
-    pthread_mutex_t* waitMutex = new pthread_mutex_t ;
+    pthread_mutex_t* waitMutex = new pthread_mutex_t;
     pthread_mutex_init(waitMutex, NULL);
 
-    JobState job_state = {UNDEFINED_STAGE, 0};
+    JobState *job_state = new JobState{UNDEFINED_STAGE, 0};
 
 
     JobContext *job_context = new JobContext{thread_contexts, job_state, multiThreadLevel, &inputVec, &client, barrier,
                                              mutex, atomic_counter, nullptr, &outputVec, threads_vec,
-                                             waitMutex};
+                                             waitMutex, threads_arr};
     JobHandle job_handle = (void *) job_context;
     for (int i = 0; i < multiThreadLevel; ++i) {
         auto *ds2 = new std::vector<std::pair<K2 *, V2 *>>();
         ThreadContext *tc = new ThreadContext{ds2, job_handle, i + 1};
         job_context->thread_contexts->push_back(tc);
-        threads_vec->push_back(threads + i);
+        threads_vec->push_back(threads_arr + i);
     }
 
     for (int i = 0; i < multiThreadLevel; ++i) {
-        pthread_create(threads + i, NULL, threadMapReduce, job_context->thread_contexts->at(i));
+        pthread_create(threads_arr + i, NULL, threadMapReduce, job_context->thread_contexts->at(i));
     }
     return job_handle;
 }
@@ -352,6 +352,21 @@ void getJobState(JobHandle job, JobState *state) {
 void closeJobHandle(JobHandle job) {
     JobContext *job_context = static_cast<JobContext *>(job);
     waitForJob(job);
+    //TODO: maybe well have to free shuffled
+    delete job_context->thread_arr;
+    delete job_context->threads;
+    delete job_context->atomic_counter;
+    delete job_context->barrier;
+    pthread_mutex_destroy(job_context->mutex);
+    pthread_mutex_destroy(job_context->waitMutex);
+    delete job_context->job_state;
+    for (int i = 0; i < job_context->num_threads; i++)
+    {
+        delete job_context->thread_contexts->at(i)->ds2;
+        delete job_context->thread_contexts->at(i);
+    }
+    delete job_context->thread_contexts;
+    delete job_context;
     return;
 };
 
