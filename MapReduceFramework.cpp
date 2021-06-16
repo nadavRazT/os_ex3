@@ -1,7 +1,7 @@
 #include "MapReduceClient.h"
 #include <pthread.h>
 #include <algorithm>
-#include "Barrier/Barrier.cpp"
+#include "Barrier.h"
 #include "atomic"
 #include "iostream"
 
@@ -58,6 +58,7 @@ typedef struct {
     std::vector<std::pair<K2 *, V2 *>> *ds2;
     JobHandle job_context;
     int threadId;
+    bool wasJoined;
 } ThreadContext;
 
 typedef struct {
@@ -206,9 +207,9 @@ int numOfShuffleTasks(JobContext *job_context) {
 
 void shuffle_helper(ThreadContext *thread_context, JobContext *job_context) {
     if (thread_context->threadId == 1) {
-
-        *job_context->atomic_counter += ((uint64_t) 1 << 62);
-        *job_context->atomic_counter &= ((uint64_t) 3 << 62);
+//        *job_context->atomic_counter &= ((uint64_t) 3 << 62);
+//        *job_context->atomic_counter += ((uint64_t) 1 << 62);
+        *job_context->atomic_counter = ((uint64_t) 1 << 63);
         int num_of_shuffle_tasks = numOfShuffleTasks(job_context);
         *job_context->atomic_counter += (uint64_t) num_of_shuffle_tasks << 31;
         auto *shuffled = new std::vector<std::vector<std::pair<K2 *, V2 *>>>();
@@ -232,8 +233,7 @@ void shuffle_helper(ThreadContext *thread_context, JobContext *job_context) {
 //            printInterVec(&shuffled->at(i), thread_context);
 //        }
 
-        *job_context->atomic_counter &= ((uint64_t) 3 << 62);
-        *job_context->atomic_counter |= ((uint64_t) 3 << 62);
+        *job_context->atomic_counter = ((uint64_t) 3 << 62);
         *job_context->atomic_counter += (uint64_t) shuffled->size() << 31;
 //        std::cout << thread_context->threadId <<(job_context->shuffledVector)->size() << ((job_context->atomic_counter->load()) & FIRST_MASK) <<std::endl;
 
@@ -311,7 +311,7 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
     JobHandle job_handle = (void *) job_context;
     for (int i = 0; i < multiThreadLevel; ++i) {
         auto *ds2 = new std::vector<std::pair<K2 *, V2 *>>();
-        ThreadContext *tc = new ThreadContext{ds2, job_handle, i + 1};
+        ThreadContext *tc = new ThreadContext{ds2, job_handle, i + 1, false};
         job_context->thread_contexts->push_back(tc);
         threads_vec->push_back(threads_arr + i);
     }
@@ -326,7 +326,12 @@ void waitForJob(JobHandle job) {
     JobContext *job_context = static_cast<JobContext *>(job);
     pthread_mutex_lock(job_context->waitMutex);
     for (int i = 0; i < job_context->num_threads; ++i) {
-       pthread_join(*(job_context->threads->at(i)), NULL);
+        if(job_context->thread_contexts->at(i)->wasJoined)
+        {
+            continue;
+        }
+        job_context->thread_contexts->at(i)->wasJoined = true;
+        pthread_join(*(job_context->threads->at(i)), NULL);
     }
     pthread_mutex_unlock(job_context->waitMutex);
 }

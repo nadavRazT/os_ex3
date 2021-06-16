@@ -1,0 +1,37 @@
+guycarmeli, nadavraz
+Guy Carmeli (322988460), Nadav Raz (211873674)
+EX: 2
+
+FILES:
+MapReduceFramework.cpp -- the implementation of the map reduce algorithm
+Barrier.cpp -- implementation of the barrier
+README -- this file
+
+REMARKS:
+Surprisingly, this exercise did not include any theoretical questions. thus, and since we had a wonderful
+time working on this remarkable project, we chose to share some of our most significant insights with
+the course staff. first, we want to praise the course staff's generosity, that came inch-perfectly on time
+with the delightful extension they granted us. Now, we want to share the dreadful experience we had on
+Saturday, when we assembled the team, which included commander guy and commander nadav, in our astonishing man-cave.
+it was just after the moment we instinctively ripped the electricity supply unit out of its place, when we
+heard something unusual going on in the TV. after a quick move to the adjacent room, we saw the horrifying
+scene of paramedics bending over christian eriksen and trying to save his life in the euro 2020 match between
+finland and denemark which is in denemark. luckily, eriksen survived, but on the less fortunate side, commander
+guy lost 400 NIS since eriksen is denemark's top-notch player, and he had put his money on him. right after
+these shocking and life-changing moments, which put your life in proportions,commander guy chose to leave the
+house and meet commander uri in the neighborhood snooker bar at 1am. it was the exact moment that we realized we
+only had 3 lines of code written in our project, but more importantly, commander uri revealed that commander samal
+got him completely off track, and that he offered himself as the next bob, while commander guy is the designated
+commander samal. after some brilliant and breath-taking snooker frames, the coding team was assembled again to
+hit this exercise "shok al yareh", but this time for real, and without any distractions, except for the
+temptation of gambling that sticked commander guy to winner application. Now, without any further ado, lets dive
+into the guts of our splendid, high quality and tip top code, just as expected from two experienced map-reduce
+frameworkers, who have 10 years of continuous cpp programming in their tools arsenal, and heroically defeated
+the notorious oop course and the tyrant OS ex2. as a lesson from the tyrant, we decided to use state of the art
+and novel debugging methods - std::cout. we then noticed that it was almost a crime not to use these outstanding
+and delightful methods, since we passed most of the test at first strike. as always, not everything goes
+inch-perfect, even for brilliant and admired commanders like us, and we once again faced our bitterest
+nemesis - statistical bugs. at that point, we had to ask ourself where was the cue ball going, and we blocked
+the pot with some thick cucumbers printing. after held back the enemy, we thought what would ronnie osullivan
+do. after going cow cow and toe to toe, we had a magnificent breakthrough, as a grey cell in commander guy's
+popped up, and scored a min-90 bicycle kick.

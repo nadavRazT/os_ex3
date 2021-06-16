@@ -67,24 +67,59 @@ RM = /home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/noam/Documents/CLionProjects/OS/os_ex3
+CMAKE_SOURCE_DIR = /home/noam/Documents/CLionProjects/OS/test_ex3/os_ex3
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug
+CMAKE_BINARY_DIR = /home/noam/Documents/CLionProjects/OS/test_ex3/os_ex3/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
 
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
 
-.PHONY : rebuild_cache/fast
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -97,11 +132,22 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug/CMakeFiles /home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/noam/Documents/CLionProjects/OS/test_ex3/os_ex3/cmake-build-debug/CMakeFiles /home/noam/Documents/CLionProjects/OS/test_ex3/os_ex3/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/noam/Documents/CLionProjects/OS/test_ex3/os_ex3/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -130,17 +176,96 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named os_ex3
+# Target rules for targets named mattanTester
 
 # Build rule for target.
-os_ex3: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 os_ex3
-.PHONY : os_ex3
+mattanTester: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mattanTester
+.PHONY : mattanTester
 
 # fast build rule for target.
-os_ex3/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/build
-.PHONY : os_ex3/fast
+mattanTester/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/build
+.PHONY : mattanTester/fast
+
+#=============================================================================
+# Target rules for targets named gmock_main
+
+# Build rule for target.
+gmock_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock_main
+.PHONY : gmock_main
+
+# fast build rule for target.
+gmock_main/fast:
+	$(MAKE) $(MAKESILENT) -f googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
+.PHONY : gmock_main/fast
+
+#=============================================================================
+# Target rules for targets named gmock
+
+# Build rule for target.
+gmock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock
+.PHONY : gmock
+
+# fast build rule for target.
+gmock/fast:
+	$(MAKE) $(MAKESILENT) -f googletest-build/googlemock/CMakeFiles/gmock.dir/build.make googletest-build/googlemock/CMakeFiles/gmock.dir/build
+.PHONY : gmock/fast
+
+#=============================================================================
+# Target rules for targets named gtest_main
+
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
+
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) $(MAKESILENT) -f googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make googletest-build/googletest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
+
+#=============================================================================
+# Target rules for targets named gtest
+
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
+
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) $(MAKESILENT) -f googletest-build/googletest/CMakeFiles/gtest.dir/build.make googletest-build/googletest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
+
+Barrier.o: Barrier.cpp.o
+
+.PHONY : Barrier.o
+
+# target to build an object file
+Barrier.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/Barrier.cpp.o
+.PHONY : Barrier.cpp.o
+
+Barrier.i: Barrier.cpp.i
+
+.PHONY : Barrier.i
+
+# target to preprocess a source file
+Barrier.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/Barrier.cpp.i
+.PHONY : Barrier.cpp.i
+
+Barrier.s: Barrier.cpp.s
+
+.PHONY : Barrier.s
+
+# target to generate assembly for a file
+Barrier.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/Barrier.cpp.s
+.PHONY : Barrier.cpp.s
 
 MapReduceFramework.o: MapReduceFramework.cpp.o
 
@@ -148,7 +273,7 @@ MapReduceFramework.o: MapReduceFramework.cpp.o
 
 # target to build an object file
 MapReduceFramework.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/MapReduceFramework.cpp.o
 .PHONY : MapReduceFramework.cpp.o
 
 MapReduceFramework.i: MapReduceFramework.cpp.i
@@ -157,7 +282,7 @@ MapReduceFramework.i: MapReduceFramework.cpp.i
 
 # target to preprocess a source file
 MapReduceFramework.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/MapReduceFramework.cpp.i
 .PHONY : MapReduceFramework.cpp.i
 
 MapReduceFramework.s: MapReduceFramework.cpp.s
@@ -166,7 +291,7 @@ MapReduceFramework.s: MapReduceFramework.cpp.s
 
 # target to generate assembly for a file
 MapReduceFramework.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/MapReduceFramework.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/MapReduceFramework.cpp.s
 .PHONY : MapReduceFramework.cpp.s
 
 SampleClient.o: SampleClient.cpp.o
@@ -175,7 +300,7 @@ SampleClient.o: SampleClient.cpp.o
 
 # target to build an object file
 SampleClient.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/SampleClient.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/SampleClient.cpp.o
 .PHONY : SampleClient.cpp.o
 
 SampleClient.i: SampleClient.cpp.i
@@ -184,7 +309,7 @@ SampleClient.i: SampleClient.cpp.i
 
 # target to preprocess a source file
 SampleClient.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/SampleClient.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/SampleClient.cpp.i
 .PHONY : SampleClient.cpp.i
 
 SampleClient.s: SampleClient.cpp.s
@@ -193,7 +318,7 @@ SampleClient.s: SampleClient.cpp.s
 
 # target to generate assembly for a file
 SampleClient.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/os_ex3.dir/build.make CMakeFiles/os_ex3.dir/SampleClient.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mattanTester.dir/build.make CMakeFiles/mattanTester.dir/SampleClient.cpp.s
 .PHONY : SampleClient.cpp.s
 
 # Help Target
@@ -203,8 +328,19 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... os_ex3"
+	@echo "... gmock"
+	@echo "... gmock_main"
+	@echo "... gtest"
+	@echo "... gtest_main"
+	@echo "... mattanTester"
+	@echo "... Barrier.o"
+	@echo "... Barrier.i"
+	@echo "... Barrier.s"
 	@echo "... MapReduceFramework.o"
 	@echo "... MapReduceFramework.i"
 	@echo "... MapReduceFramework.s"
