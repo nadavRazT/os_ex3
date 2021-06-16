@@ -431,3 +431,17 @@ Parsed CXX implicit link information from above output:
   implicit fwks: []
 
 
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_0e5ab/fast && /usr/bin/make  -f CMakeFiles/cmTC_0e5ab.dir/build.make CMakeFiles/cmTC_0e5ab.dir/build
+make[1]: Entering directory '/home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0e5ab.dir/CheckIncludeFile.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_0e5ab.dir/CheckIncludeFile.c.o -c /home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_0e5ab
+/home/noam/Desktop/clion-2021.1.1/bin/cmake/linux/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0e5ab.dir/link.txt --verbose=1
+/usr/bin/cc -rdynamic CMakeFiles/cmTC_0e5ab.dir/CheckIncludeFile.c.o -o cmTC_0e5ab 
+make[1]: Leaving directory '/home/noam/Documents/CLionProjects/OS/os_ex3/cmake-build-debug/CMakeFiles/CMakeTmp'
+
+
+

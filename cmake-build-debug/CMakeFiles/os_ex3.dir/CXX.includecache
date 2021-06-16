@@ -6,37 +6,27 @@
 
 #IncludeRegexTransform: 
 
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.cpp
-Barrier.h
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
-cstdlib
--
-cstdio
--
-iostream
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/iostream
-
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.h
-pthread.h
--
-
 /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
 vector
 -
 utility
 -
 
-/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.cpp
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h
 MapReduceClient.h
 /home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceClient.h
-pthread.h
+
+/home/noam/Documents/CLionProjects/OS/os_ex3/SampleClient.cpp
+MapReduceFramework.h
+/home/noam/Documents/CLionProjects/OS/os_ex3/MapReduceFramework.h
+cstdio
 -
-algorithm
+string
 -
-Barrier/Barrier.cpp
-/home/noam/Documents/CLionProjects/OS/os_ex3/Barrier/Barrier.cpp
-atomic
-/home/noam/Documents/CLionProjects/OS/os_ex3/atomic
+array
+-
+unistd.h
+-
 iostream
 /home/noam/Documents/CLionProjects/OS/os_ex3/iostream
 

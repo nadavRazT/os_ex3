@@ -45,7 +45,7 @@ public:
 
 			KChar* k2 = new KChar(i);
 			VCount* v2 = new VCount(counts[i]);
-			usleep(150000);
+			usleep(123300);
 			emit2(k2, v2, context);
 		}
 	}
@@ -72,21 +72,26 @@ int main(int argc, char** argv)
 	CounterClient client;
 	InputVec inputVec;
 	OutputVec outputVec;
-	VString s1("This string is full of characters");
-	VString s2("Multithreading is awesome");
-	VString s3("race conditions are bad");
-//	VString s1("abc");
-//	VString s2("acb");
-//	VString s3("abc");
+//	VString s1("This string is full of characters");
+//	VString s2("Multithreading is awesome");
+//	VString s3("race conditions are bad");
+	VString s1("absertsrec");
+	VString s2("acserrtsertb");
+	VString s3("absersfd rc");
+    VString s5("aasfdhgmecb");
+    VString s4("aservsevserbc");
 	inputVec.push_back({nullptr, &s1});
 	inputVec.push_back({nullptr, &s2});
 	inputVec.push_back({nullptr, &s3});
+	inputVec.push_back({nullptr, &s4});
+	inputVec.push_back({nullptr, &s5});
 	JobState state;
     JobState last_state={UNDEFINED_STAGE,0};
 	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 2);
 //    waitForJob(job);
-    std::cout<<"FINISHED"<< std::endl;
-    while(true){};
+
+//    std::cout<<"FINISHED"<< std::endl;
+
 	getJobState(job, &state);
     
 	while (state.stage != REDUCE_STAGE || state.percentage != 100.0)
@@ -95,7 +100,7 @@ int main(int argc, char** argv)
             printf("stage %d, %f%% \n", 
 			state.stage, state.percentage);
         }
-		usleep(100000);
+		usleep(10);
         last_state = state;
 		getJobState(job, &state);
 	}
